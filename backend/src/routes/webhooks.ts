@@ -89,9 +89,10 @@ router.post("/webhooks/email", async (req, res) => {
       return res.status(400).json({
         error:
           "No RFP reference found in email subject. " +
-          "Please include either 'RFPID:<rfpId>' or 'RFP: <title keyword>' in the subject.",
+          "Please include either 'RFPID:<rfpId>' or add the RFP title/keyword in the subject.",
         exampleSubjects: [
           "Laptop Proposal RFPID:cmisghrjt0003peit8md1a9fq",
+          "Proposal for Procurement of 20 Business Laptops",
           "Laptop Proposal RFP: Laptops Procurement",
         ],
         subject,
