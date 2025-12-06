@@ -1,6 +1,6 @@
 import type { EmailMessage } from "../types";
 
-const BASE_URL = "http://localhost:4000";
+const BASE_URL = "https://procurement-app-backend.onrender.com";
 
 export async function getAllEmails(): Promise<EmailMessage[]> {
   const res = await fetch(`${BASE_URL}/emails`);

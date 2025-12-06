@@ -3,7 +3,7 @@ import type {
   ProposalComparisonResult,
 } from "../types";
 
-const BASE_URL = "http://localhost:4000";
+const BASE_URL = "https://procurement-app-backend.onrender.com";
 
 // GET /rfps/:rfpId/proposals
 export async function getProposalsForRfp(

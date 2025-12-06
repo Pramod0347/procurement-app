@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:4000";
+const BASE_URL = "https://procurement-app-backend.onrender.com";
 
 import type { Rfp } from "../types";
 
