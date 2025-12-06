@@ -1,10 +1,9 @@
-const BASE_URL = "https://procurement-app-backend.onrender.com";
-
 import type { Rfp } from "../types";
+import { API_BASE_URL } from "../config";
 
 export async function getAllRfps(): Promise<Rfp[]> {
     try {
-        const res = await fetch(`${BASE_URL}/rfps`);
+        const res = await fetch(`${API_BASE_URL}/rfps`);
 
         if (!res.ok) {
             throw new Error("Failed to fetch RFPs");
@@ -24,7 +23,7 @@ export async function createRfp(input: {
     naturalLanguageInput: string;
 }): Promise<Rfp> {
     try {
-        const res = await fetch(`${BASE_URL}/rfps/from-text`, {
+        const res = await fetch(`${API_BASE_URL}/rfps/from-text`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

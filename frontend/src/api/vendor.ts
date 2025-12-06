@@ -1,10 +1,9 @@
 import type { Vendor } from "../types";
-
-const BASE_URL = "https://procurement-app-backend.onrender.com";
+import { API_BASE_URL } from "../config";
 
 export async function getAllVendors(): Promise<Vendor[]> {
   try {
-    const res = await fetch(`${BASE_URL}/vendors`);
+    const res = await fetch(`${API_BASE_URL}/vendors`);
     if (!res.ok) throw new Error("Failed to load vendors");
     return await res.json();
   } catch (error) {
@@ -20,7 +19,7 @@ export async function createVendor(data: {
   notes?: string;
 }): Promise<Vendor> {
   try {
-    const res = await fetch(`${BASE_URL}/vendors`, {
+    const res = await fetch(`${API_BASE_URL}/vendors`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
