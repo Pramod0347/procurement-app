@@ -22,7 +22,6 @@ export function extractRfpSelectorFromSubject(
     return { keyword: keywordMatch[1].trim() };
   }
 
-  // Fallback: use a cleaned subject as a loose keyword (e.g., "Proposal for Procurement of 20 Business Laptops")
   const stripped = cleanedSubject
     .replace(/^(proposal|quote|bid)\s+for\s+/i, "")
     .replace(/^(proposal|quote|bid)\s*[:\-]\s*/i, "")

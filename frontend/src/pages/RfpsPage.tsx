@@ -32,9 +32,7 @@ export function RfpsPage() {
   }, []);
 
   function handleRfpCreated(newRfp: Rfp) {
-    // Add new RFP at top of list
     setRfps((prev) => [newRfp, ...prev]);
-    // Optionally expand it immediately
     setExpandedRfpId(newRfp.id);
   }
 
@@ -45,7 +43,6 @@ export function RfpsPage() {
   return (
     <div className="min-h-screen bg-slate-100">
       <div className="mx-auto max-w-6xl px-6 py-10">
-        {/* Header */}
         <header className="mb-6 flex items-center justify-between gap-4">
           <div>
             <p className="text-xs font-medium uppercase text-indigo-600">
@@ -67,7 +64,6 @@ export function RfpsPage() {
           </button>
         </header>
 
-        {/* Content states */}
         {loading && (
           <p className="text-sm text-slate-600">Loading RFPs…</p>
         )}
@@ -113,7 +109,6 @@ export function RfpsPage() {
               <tbody className="divide-y divide-slate-100">
                 {rfps.map((rfp) => (
                   <React.Fragment key={rfp.id}>
-                    {/* Main row */}
                     <tr className="hover:bg-slate-50">
                       <td className="px-4 py-3 text-sm font-medium text-slate-900">
                         {rfp.title}
@@ -144,7 +139,6 @@ export function RfpsPage() {
                       </td>
                     </tr>
 
-                    {/* Expanded details row */}
                     {expandedRfpId === rfp.id && (
                       <tr className="bg-slate-50/60">
                         <td className="px-4 pb-4 pt-1" colSpan={6}>
@@ -159,7 +153,6 @@ export function RfpsPage() {
           </div>
         )}
 
-        {/* Create RFP modal */}
         <RfpCreateModal
           isOpen={isCreateOpen}
           onClose={() => setIsCreateOpen(false)}
@@ -187,7 +180,6 @@ function RfpInlineDetails({ rfp }: RfpInlineDetailsProps) {
         setVendorsError(null);
         const data = await getAllVendors();
         setVendors(data);
-        // later we’ll hydrate selectedVendorIds from backend RFP-vendor relation
       } catch (err: any) {
         console.error("Failed to load vendors", err);
         setVendorsError(err.message ?? "Failed to load vendors");

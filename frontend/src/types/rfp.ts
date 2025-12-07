@@ -1,5 +1,3 @@
-// src/types/rfp.ts
-
 export type Rfp = {
   id: string;
   title: string;
@@ -10,9 +8,9 @@ export type Rfp = {
   budget: number | null;
   currency: string | null;
 
-  deliveryDeadline: string | null; // will be an ISO date string from backend
+  deliveryDeadline: string | null;
   paymentTerms: string | null;
   minimumWarrantyMonths: number | null;
 
-  createdAt: string; // ISO string
+  createdAt: string;
 };

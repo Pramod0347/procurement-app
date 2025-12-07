@@ -2,19 +2,16 @@ import React, { useEffect, useState } from "react";
 import { getAllEmails } from "../api/email";
 import type { EmailMessage } from "../types";
 
-// helper: extract RFP reference from subject
 function extractRfpSelectorFromSubject(
   subject: string | null | undefined
 ): { rfpId?: string; keyword?: string } {
   if (!subject) return {};
 
-  // Pattern 1: RFPID:cmisghrjt0003peit8md1a9fq
   const idMatch = subject.match(/\bRFPID\s*[:\-]\s*([a-zA-Z0-9]+)/i);
   if (idMatch && idMatch[1]) {
     return { rfpId: idMatch[1] };
   }
 
-  // Pattern 2: RFP: Laptops Procurement
   const keywordMatch = subject.match(/\bRFP\s*[:\-]\s*(.+)$/i);
   if (keywordMatch && keywordMatch[1]) {
     return { keyword: keywordMatch[1].trim() };
@@ -54,7 +51,6 @@ export function EmailsPage() {
   return (
     <div className="min-h-screen bg-slate-100">
       <div className="mx-auto max-w-6xl px-6 py-10">
-        {/* Header */}
         <header className="mb-6 flex items-center justify-between gap-4">
           <div>
             <p className="text-xs font-medium uppercase text-indigo-600">
@@ -69,7 +65,6 @@ export function EmailsPage() {
           </div>
         </header>
 
-        {/* States */}
         {loading && (
           <p className="text-sm text-slate-600">Loading emails…</p>
         )}
@@ -116,7 +111,6 @@ export function EmailsPage() {
 
                   return (
                     <React.Fragment key={email.id}>
-                      {/* Main row */}
                       <tr className="hover:bg-slate-50">
                         <td className="px-4 py-3 text-sm text-slate-900">
                           {email.from ?? "—"}
@@ -164,7 +158,6 @@ export function EmailsPage() {
                         </td>
                       </tr>
 
-                      {/* Expanded row */}
                       {expandedEmailId === email.id && (
                         <tr className="bg-slate-50/60">
                           <td className="px-4 pb-4 pt-1" colSpan={6}>
@@ -184,13 +177,11 @@ export function EmailsPage() {
   );
 }
 
-// inline details block
 function EmailInlineDetails({ email }: { email: EmailMessage }) {
   const rfpRef = extractRfpSelectorFromSubject(email.subject);
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white px-4 py-4 shadow-sm">
-      {/* Summary header text */}
       <p className="text-xs text-slate-600">
         <span className="font-semibold text-slate-900">
           {email.from ?? "Unknown sender"}
@@ -224,7 +215,6 @@ function EmailInlineDetails({ email }: { email: EmailMessage }) {
         .
       </p>
 
-      {/* Meta fields */}
       <div className="mt-3 grid grid-cols-2 gap-3 text-xs text-slate-700 md:w-[420px]">
         <DetailField label="From" value={email.from ?? "—"} />
         <DetailField label="To" value={email.to ?? "—"} />
@@ -242,7 +232,6 @@ function EmailInlineDetails({ email }: { email: EmailMessage }) {
         />
       </div>
 
-      {/* Body (text only) */}
       {email.bodyText && (
         <div className="mt-3">
           <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500">
@@ -257,7 +246,6 @@ function EmailInlineDetails({ email }: { email: EmailMessage }) {
   );
 }
 
-// small reusable label/value component
 function DetailField({ label, value }: { label: string; value: string }) {
   return (
     <div>

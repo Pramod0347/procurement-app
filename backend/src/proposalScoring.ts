@@ -1,13 +1,13 @@
-// src/proposalScoring.ts
 import { Proposal, Vendor, Rfp } from ".prisma/client";
 
 export type ProposalWithVendor = Proposal & { vendor: Vendor };
 
 export type ProposalScoreBreakdown = {
-  priceScore: number;      // 0–1
-  deliveryScore: number;   // 0–1
-  warrantyScore: number;   // 0–1
-  totalScore: number;      // weighted sum
+  priceScore: number;
+  deliveryScore: number;
+  warrantyScore: number;
+  totalScore: number;
+  scoreOutOf10: number;
 };
 
 export type ProposalWithScores = ProposalWithVendor & {
@@ -72,7 +72,6 @@ export function compareProposalsForRfp(
   const maxWarranty = warranties.length ? Math.max(...warranties) : null;
 
   const scored: ProposalWithScores[] = effectiveProposals.map(p => {
-    // price: lower is better (missing = neutral 0.5)
     let priceScore = 0.5;
     if (p.totalPrice != null && prices.length > 0) {
       if (maxPrice === minPrice) {
@@ -82,7 +81,6 @@ export function compareProposalsForRfp(
       }
     }
 
-    // delivery: lower is better (missing = neutral 0.5)
     let deliveryScore = 0.5;
     if (p.deliveryDays != null && minDelivery != null && maxDelivery != null) {
       if (maxDelivery === minDelivery) {
@@ -93,7 +91,6 @@ export function compareProposalsForRfp(
       }
     }
 
-    // warranty: higher is better (missing = neutral 0.5)
     let warrantyScore = 0.5;
     if (
       p.warrantyMonths != null &&
@@ -112,6 +109,7 @@ export function compareProposalsForRfp(
       priceScore * weights.price +
       deliveryScore * weights.delivery +
       warrantyScore * weights.warranty;
+    const scoreOutOf10 = totalScore * 10;
 
     return {
       ...p,
@@ -120,6 +118,7 @@ export function compareProposalsForRfp(
         deliveryScore,
         warrantyScore,
         totalScore,
+        scoreOutOf10,
       },
     };
   });

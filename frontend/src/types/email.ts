@@ -4,9 +4,9 @@ export type EmailMessage = {
   to: string | null;
   subject: string | null;
   bodyText: string | null;
-  bodyHtml?: string | null; // we won't show this
-  status: string; // e.g. "PENDING", "PARSED"
+  bodyHtml?: string | null;
+  status: string;
   messageId: string | null;
-  receivedAt: string; // ISO string
-  createdAt: string;  // ISO string
+  receivedAt: string;
+  createdAt: string;
 };

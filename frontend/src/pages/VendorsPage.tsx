@@ -3,9 +3,6 @@ import { getAllVendors } from "../api/vendor";
 import type { Vendor } from "../types";
 import { VendorCreateModal } from "../components/VendorCreateModal";
 
-/**
- * Utility to get initials from name
- */
 function getInitials(name: string) {
   const parts = name.trim().split(" ");
   if (parts.length === 1) return parts[0][0].toUpperCase();
@@ -20,7 +17,6 @@ export function VendorsPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [expandedVendorId, setExpandedVendorId] = useState<string | null>(null);
 
-  // Load vendors on mount
   useEffect(() => {
     async function load() {
       try {
@@ -52,7 +48,6 @@ export function VendorsPage() {
   return (
     <div className="min-h-screen bg-slate-100">
       <div className="mx-auto max-w-6xl px-6 py-10">
-        {/* Header */}
         <header className="mb-6 flex items-center justify-between gap-4">
           <div>
             <p className="text-xs font-medium uppercase text-indigo-600">
@@ -74,7 +69,6 @@ export function VendorsPage() {
           </button>
         </header>
 
-        {/* Content states */}
         {loading && (
           <p className="text-sm text-slate-600">Loading vendors…</p>
         )}
@@ -118,11 +112,9 @@ export function VendorsPage() {
               <tbody className="divide-y divide-slate-100">
                 {vendors.map((vendor) => (
                   <React.Fragment key={vendor.id}>
-                    {/* Main row */}
                     <tr className="hover:bg-slate-50">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          {/* Avatar with initials */}
                           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-100 text-sm font-semibold text-violet-700">
                             {getInitials(vendor.name)}
                           </div>
@@ -158,7 +150,6 @@ export function VendorsPage() {
                       </td>
                     </tr>
 
-                    {/* Expanded details */}
                     {expandedVendorId === vendor.id && (
                       <tr className="bg-slate-50/60">
                         <td className="px-4 pb-4 pt-1" colSpan={6}>
@@ -173,7 +164,6 @@ export function VendorsPage() {
           </div>
         )}
 
-        {/* Modal */}
         <VendorCreateModal
           isOpen={isCreateOpen}
           onClose={() => setIsCreateOpen(false)}
@@ -184,7 +174,6 @@ export function VendorsPage() {
   );
 }
 
-/* Inline details block */
 function VendorInlineDetails({ vendor }: { vendor: Vendor }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white px-4 py-4 shadow-sm">

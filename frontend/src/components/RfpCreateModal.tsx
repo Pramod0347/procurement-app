@@ -19,7 +19,7 @@ export function RfpCreateModal({
   const [error, setError] = useState<string | null>(null);
 
   if (!isOpen) {
-    return null; // don’t render anything when closed
+    return null;
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -42,7 +42,6 @@ export function RfpCreateModal({
         onCreated(rfp);
       }
 
-      // Reset internal state
       setTitle("");
       setNaturalInput("");
 
@@ -58,7 +57,6 @@ export function RfpCreateModal({
   function handleBackdropClick(
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) {
-    // Close only if click is on dark background, not inside the modal
     if (e.target === e.currentTarget && !loading) {
       onClose();
     }

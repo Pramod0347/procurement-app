@@ -4,7 +4,6 @@ import type {
 } from "../types";
 import { API_BASE_URL } from "../config";
 
-// GET /rfps/:rfpId/proposals
 export async function getProposalsForRfp(
   rfpId: string
 ): Promise<ProposalWithRelations[]> {
@@ -17,7 +16,6 @@ export async function getProposalsForRfp(
   return res.json();
 }
 
-// GET /rfps/:rfpId/compare
 export async function getProposalComparison(
   rfpId: string
 ): Promise<ProposalComparisonResult> {

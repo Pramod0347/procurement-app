@@ -14,6 +14,7 @@ type ProposalScores = {
   deliveryScore: number;
   warrantyScore: number;
   totalScore: number;
+  scoreOutOf10: number;
 };
 
 type ComparisonProposal = {
@@ -56,7 +57,6 @@ export function ProposalsPage() {
   );
   const [showRaw, setShowRaw] = useState(false);
 
-  // Load all RFPs once (for the central selector)
   useEffect(() => {
     async function loadRfps() {
       try {
@@ -75,7 +75,6 @@ export function ProposalsPage() {
     loadRfps();
   }, []);
 
-  // When RFP changes, call /rfps/:rfpId/compare
   useEffect(() => {
     if (!selectedRfpId) {
       setComparison(null);
@@ -110,12 +109,10 @@ export function ProposalsPage() {
     setExpandedProposalId((current) => (current === id ? null : id));
   }
 
-  // Recommended proposal: use bestProposalId, fallback to highest totalScore
   const recommendedProposal =
     comparison?.proposals.find((p) => p.id === comparison.bestProposalId) ??
     getFallbackRecommended(comparison);
 
-  // Ranking map by totalScore (higher score = rank 1)
   const rankById: Record<string, number> = {};
   if (comparison?.proposals?.length) {
     const sorted = [...comparison.proposals].sort(
@@ -129,7 +126,6 @@ export function ProposalsPage() {
   return (
     <div className="min-h-screen bg-slate-100">
       <div className="mx-auto max-w-6xl px-6 py-10">
-        {/* Header */}
         <header className="mb-8 text-center">
           <p className="text-xs font-medium uppercase text-indigo-600">
             Proposals
@@ -143,7 +139,6 @@ export function ProposalsPage() {
           </p>
         </header>
 
-        {/* Centered RFP selector card */}
         <section className="mb-8 flex justify-center">
           <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white px-6 py-5 shadow-sm">
             <div className="text-center">
@@ -179,26 +174,22 @@ export function ProposalsPage() {
           </div>
         </section>
 
-        {/* Error */}
         {error && (
           <p className="mb-4 text-sm text-red-600">{error}</p>
         )}
 
-        {/* No RFP selected */}
         {!selectedRfpId && !loadingCompare && (
           <p className="text-center text-sm text-slate-600">
             Select an RFP above to see proposal comparison.
           </p>
         )}
 
-        {/* Loading comparison */}
         {selectedRfpId && loadingCompare && (
           <p className="text-center text-sm text-slate-600">
             Calculating comparison for this RFP…
           </p>
         )}
 
-        {/* Nothing to show yet */}
         {selectedRfpId &&
           !loadingCompare &&
           !error &&
@@ -209,14 +200,12 @@ export function ProposalsPage() {
             </p>
           )}
 
-        {/* Comparison summary + recommended */}
         {selectedRfpId &&
           !loadingCompare &&
           !error &&
           comparison &&
           comparison.proposals.length > 0 && (
             <>
-              {/* Criteria summary */}
               <section className="mb-4 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
                 <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
                   Comparison setup
@@ -257,7 +246,6 @@ export function ProposalsPage() {
                 </div>
               </section>
 
-              {/* Recommended proposal card */}
               {recommendedProposal && (
                 <section className="mb-6">
                   <RecommendedProposalCard
@@ -267,7 +255,6 @@ export function ProposalsPage() {
                 </section>
               )}
 
-              {/* Proposals table */}
               <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
                 <table className="min-w-full divide-y divide-slate-200">
                   <thead className="bg-slate-50">
@@ -288,7 +275,7 @@ export function ProposalsPage() {
                         Warranty (months)
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                        Score
+                        Score (0–10)
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                         Source
@@ -332,8 +319,8 @@ export function ProposalsPage() {
                               {p.warrantyMonths ?? "—"}
                             </td>
                             <td className="px-4 py-3 text-sm text-slate-700">
-                              {p.scores?.totalScore != null
-                                ? `${p.scores.totalScore.toFixed(2)} / 1`
+                              {p.scores?.scoreOutOf10 != null
+                                ? `${p.scores.scoreOutOf10.toFixed(2)} / 10`
                                 : "—"}
                             </td>
                             <td className="px-4 py-3 text-sm text-slate-700">
@@ -365,7 +352,6 @@ export function ProposalsPage() {
                 </table>
               </section>
 
-              {/* Optional raw JSON (for debugging/tuning) */}
               <section className="mt-4">
                 <button
                   onClick={() => setShowRaw((prev) => !prev)}
@@ -386,7 +372,6 @@ export function ProposalsPage() {
   );
 }
 
-// Fallback: pick highest totalScore if bestProposalId is missing or not found
 function getFallbackRecommended(
   comparison: RfpComparison | null
 ): ComparisonProposal | undefined {
@@ -447,7 +432,7 @@ function RecommendedProposalCard({
             </p>
           )}
           <p className="text-[11px] text-slate-600">
-            Total score: {proposal.scores.totalScore.toFixed(3)} / 1
+            Total score: {proposal.scores.scoreOutOf10.toFixed(2)} / 10
           </p>
           <p className="text-[11px] text-slate-600">
             Source: {proposal.source}
@@ -505,7 +490,6 @@ function ProposalInlineDetails({ proposal }: { proposal: ComparisonProposal }) {
         <ScoreField label="Warranty score" value={s.warrantyScore} />
       </div>
 
-      {/* Terms / notes */}
       <div className="mt-3 grid grid-cols-2 gap-3 text-xs text-slate-700 md:w-[420px]">
         <DetailField
           label="Terms"

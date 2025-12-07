@@ -35,7 +35,6 @@ export async function createRfp(input: {
         });
 
         if (!res.ok) {
-            // optional: parse error JSON if you want
             throw new Error("Failed to create RFP");
         }
 

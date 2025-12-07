@@ -37,7 +37,6 @@ function cleanModelJson(raw: string): string {
     .trim();
 }
 
-// Low-level: talk to Gemini, return raw JSON string
 async function callGeminiJson(
   systemPrompt: string,
   userPrompt: string
@@ -93,7 +92,6 @@ async function callGeminiJson(
   return cleanModelJson(text);
 }
 
-// Low-level: talk to Groq, return raw JSON string
 async function callGroqJson(
   systemPrompt: string,
   userPrompt: string
@@ -138,7 +136,6 @@ async function callGroqJson(
   return cleanModelJson(content);
 }
 
-// Generic helper: try Gemini first, then Groq
 async function callGeminiOrGroqForJson(
   systemPrompt: string,
   userPrompt: string
@@ -206,7 +203,6 @@ export async function generateRfpSpecFromText(
     throw new Error("Failed to parse AI response as JSON for RFP");
   }
 
-  // Light validation / coercion
   const spec: RfpStructuredSpec = {
     title: typeof parsed.title === "string" ? parsed.title : "Untitled RFP",
     items: Array.isArray(parsed.items)

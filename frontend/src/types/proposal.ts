@@ -20,16 +20,12 @@ export type Proposal = {
   updatedAt: string;
 };
 
-// This matches what your backend returns from /rfps/:rfpId/proposals
-// (include: { vendor: true, email: true })
 export type ProposalWithRelations = Proposal & {
   vendor: Vendor;
   email: EmailMessage | null;
 };
 
-// Comparison result – we keep it generic + “recommendedProposalId”
 export type ProposalComparisonResult = {
   recommendedProposalId?: string | null;
-  // anything else your backend returns – scores, breakdown etc
   [key: string]: any;
 };

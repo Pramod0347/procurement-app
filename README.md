@@ -1,145 +1,117 @@
 # README
 
 1. Project Setup  
-1.a. Prerequisites  
-- Node.js 20+  
-- PostgreSQL (local or hosted); `DATABASE_URL` required  
-- npm (bundled with Node)  
-- Email inbound: CloudMailin (or any provider forwarding to an HTTP webhook)  
-- Environment files: `backend/.env` and `frontend/.env` are required
+    1.a. Prerequisites  
+        - Node.js 20+  
+        - PostgreSQL with `DATABASE_URL` configured  
+        - npm (bundled with Node)  
+        - Email inbound: CloudMailin webhook  
+        - Env files required: `backend/.env` and `frontend/.env`
 
-Hosted URLs  
-- Frontend (live): https://procurement-app-delta.vercel.app/  
-- Backend API base: https://procurement-app-backend.onrender.com  
+    Hosted URLs  
+        - Frontend (live): https://procurement-app-delta.vercel.app/  
+        - Backend API base: https://procurement-app-backend.onrender.com  
 
-1.b. Install Steps (Frontend & Backend)  
-- Backend:  
-  - `cd backend`  
-  - `npm install`  
-- Frontend:  
-  - `cd frontend`  
-  - `npm install`
+    1.b. Install Steps (Frontend & Backend)  
+        1) Backend  
+        - `cd backend`  
+        - `npm install`  
+        2) Frontend  
+        - `cd frontend`  
+        - `npm install`
 
-1.c. Email Sending / Receiving Configuration  
-- Inbound: point CloudMailin (or equivalent) to `POST https://<your-backend>/webhooks/email`.  
-- Backend will:  
-  - Parse `from`, `to`, `subject`, `plain`/`html`, `message_id` from the webhook body.  
-  - Map the sender email to an existing vendor.  
-  - Resolve RFP by `RFPID:<id>` or `RFP: <keyword>` in the subject.  
-  - Store the email, run AI parsing, and create a proposal linked to the RFP.  
-- Outbound email is not required/implemented.
+    1.c. Email Sending / Receiving Configuration  
+        - Inbound: point CloudMailin to `POST https://procurement-app-backend.onrender.com/webhooks/email`.  
+        - Backend flow: parse `from`/`to`/`subject`/`plain`/`html`/`message_id`, map sender to vendor, resolve RFP by `RFPID:<id>` or `RFP: <keyword>`, store email, run AI parsing, create proposal for that RFP.  
+        - Outbound email: not implemented. Next phase: send RFP invites and proposal receipts via an SMTP/transactional provider (e.g., SendGrid) and add status tracking + retries.
 
-1.d. How to Run Everything Locally  
-1) Backend  
-   - `cd backend`  
-   - Create `backend/.env` (see keys below).  
-   - `npm run prisma:generate`  
-   - Apply schema to DB: `npx prisma migrate deploy` (or `prisma migrate dev` if managing migrations locally).  
-   - `npm run dev` (listens on `http://localhost:4000`).  
-2) Frontend  
-   - `cd frontend`  
-   - Create `frontend/.env` with `VITE_BACKEND_URL=http://localhost:4000` (or your deployed backend).  
-   - `npm run dev` (Vite on `http://localhost:5173`).  
-3) Database  
-   - Ensure Postgres is running and reachable via `DATABASE_URL`.
+    1.d. How to Run Everything Locally  
+        1) Backend  
+        - `cd backend`  
+        - Create `backend/.env` (see keys below).  
+        - `npm run prisma:generate`  
+        - Apply schema with Prisma: `npx prisma migrate deploy`  
+        - `npm run dev` (http://localhost:4000)  
+        2) Frontend  
+        - `cd frontend`  
+        - Create `frontend/.env` with `VITE_BACKEND_URL=http://localhost:4000`  
+        - `npm run dev` (http://localhost:5173)  
+        3) Database  
+        - Postgres running and reachable via `DATABASE_URL`
 
-1.e. Seed Data / Initial Scripts  
-- No seed data bundled.  
-- Optional: create vendors/RFPs via API or use `npx prisma studio` for manual entries.
+    1.e. Seed Data / Initial Scripts  
+        - Sample seed included: vendors, RFPs, and proposals (see `backend/prisma/seed.ts`).  
+        - To apply it: set `DATABASE_URL` in `backend/.env` to the Render external connection string with `?sslmode=require`, then from `backend/` run `npx prisma migrate deploy` followed by `npx prisma db seed`. If you hit `P1000` auth errors, recheck the password/URL encoding and test with `psql "$DATABASE_URL"`.  
+        - You can also add data manually via APIs or `npx prisma studio`.
 
-Environment Keys (backend/.env)  
-- `DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DBNAME?schema=public"`  
-- `GEMINI_API_KEY=""` (required for AI parsing)  
-- `GROQ_API_KEY=""` (fallback AI provider)  
-- `PORT=4000`
+        Environment Keys (backend/.env)  
+        - `DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DBNAME?schema=public"`  
+        - `GEMINI_API_KEY=""`  
+        - `GROQ_API_KEY=""`  
+        - `PORT=4000`
 
-Environment Keys (frontend/.env)  
-- `VITE_BACKEND_URL="https://procurement-app-backend.onrender.com"` (production backend)  
-- For local dev, override with `VITE_BACKEND_URL="http://localhost:4000"`
+        Environment Keys (frontend/.env)  
+        - `VITE_BACKEND_URL="https://procurement-app-backend.onrender.com"` (override to `http://localhost:4000` for local)
 
 2. Tech Stack  
-2.a. Stack Overview  
-- Frontend: React 19, React Router 7, Vite 7, TypeScript, TailwindCSS.  
-- Backend: Node.js, Express 5, TypeScript, Prisma, PostgreSQL.  
-- AI providers: Gemini (primary), Groq (fallback).  
-- Email inbound: CloudMailin webhook handler.  
-- Infra targets: Backend (Render), DB (Render Managed Postgres), Frontend (any static host).
+    2.a. Stack Overview  
+        - Frontend: React 19, React Router 7, Vite 7, TypeScript, TailwindCSS  
+        - Backend: Node.js, Express 5, TypeScript, Prisma, PostgreSQL  
+        - AI: Gemini (primary), Groq (fallback)  
+        - Email inbound: CloudMailin webhook  
+        - Hosting targets: Backend (Render), DB (Render Managed Postgres), Frontend (Vercel/static)
 
 3. API Documentation  
-3.a. Main Endpoints (method + path)  
-- Health: `GET /health` → `{ status: "ok" }`.  
-- Vendors:  
-  - `GET /vendors` → list vendors.  
-  - `POST /vendors` body `{ name, email, contactPerson?, notes? }`.  
-- RFPs:  
-  - `GET /rfps` → list RFPs.  
-  - `POST /rfps` body `{ title, naturalLanguageInput, budget?, currency?, deliveryDeadline?, paymentTerms?, minimumWarrantyMonths?, structuredSpec? }`.  
-  - `POST /rfps/from-text` body `{ naturalLanguageInput, title? }` → AI-generated structured spec + saved RFP.  
-- Proposals:  
-  - `GET /rfps/:rfpId/proposals` → proposals for RFP.  
-  - `POST /rfps/:rfpId/proposals` body `{ vendorId, totalPrice?, currency?, deliveryDays?, warrantyMonths?, terms?, notes? }`.  
-  - `POST /rfps/:rfpId/proposals/from-text` body `{ vendorId, text, emailMeta? }` → parse email text into proposal.  
-  - `GET /rfps/:rfpId/compare` → scored comparison result.  
-  - `GET /rfps/:rfpId/emails` → proposals created from emails for that RFP.  
-- Emails:  
-  - `GET /emails` → list stored inbound emails.  
-- Webhooks:  
-  - `POST /webhooks/email` (CloudMailin format) body includes `headers`, `envelope`, `plain/html`, etc. Returns parsed proposal + email record or validation errors.
+    3.a. Main Endpoints (method + path)  
+        - Health: `GET /health`  
+        - Vendors: `GET /vendors`, `POST /vendors` `{ name, email, contactPerson?, notes? }`  
+        - RFPs: `GET /rfps`, `POST /rfps` `{ title, naturalLanguageInput, budget?, currency?, deliveryDeadline?, paymentTerms?, minimumWarrantyMonths?, structuredSpec? }`, `POST /rfps/from-text` `{ naturalLanguageInput, title? }`  
+        - Proposals: `GET /rfps/:rfpId/proposals`, `POST /rfps/:rfpId/proposals` `{ vendorId, totalPrice?, currency?, deliveryDays?, warrantyMonths?, terms?, notes? }`, `POST /rfps/:rfpId/proposals/from-text` `{ vendorId, text, emailMeta? }`, `GET /rfps/:rfpId/compare`, `GET /rfps/:rfpId/emails`  
+        - Emails: `GET /emails`  
+        - Webhooks: `POST /webhooks/email` (CloudMailin payload with headers/envelope/plain/html)
 
-Example Success (POST /vendors)  
-Request:  
-```json
-{ "name": "Lenovo India", "email": "sales@lenovo.com" }
-```  
-Response: `201 Created` with vendor JSON.  
-Common Errors: `400` for missing required fields, `500` for server/DB issues.
-
-Example Success (POST /rfps/from-text)  
-Request:  
-```json
-{ "naturalLanguageInput": "Need 20 laptops, delivery in 30 days, $20k budget" }
-```  
-Response: `201 Created` RFP with structured spec.  
-Errors: `400` missing `naturalLanguageInput`, `500` AI/DB failure.
-
-Example Success (POST /rfps/:rfpId/proposals/from-text)  
-Request:  
-```json
-{ "vendorId": "<vendor-id>", "text": "We offer 20 laptops at $950 each, 30 days delivery, 24 month warranty." }
-```  
-Response: `201 Created` with `{ proposal, parsed }`.  
-Errors: `400` missing vendor/text, `404` missing RFP/vendor, `500` AI/DB failure.
+        Examples  
+        - `POST /vendors` → `201` with vendor JSON; `400` on missing fields.
+        - `POST /rfps/from-text` → `201` with structured RFP; `400` missing `naturalLanguageInput`.  
+        - `POST /rfps/:rfpId/proposals/from-text` → `201` with `{ proposal, parsed }`; `404` if RFP/vendor missing.
 
 4. Decisions & Assumptions  
-4.a. Key Design Decisions  
-- AI-first parsing: free-text RFPs and vendor emails are converted to structured data via Gemini, with Groq as fallback.  
-- Prisma ORM with PostgreSQL for typed models and relational safety.  
-- Proposal comparison endpoint provides weighted scoring (price/delivery/warranty) to guide selection.  
-- Email webhook ingests vendor replies directly into the proposal pipeline; UI consumes stored emails and proposals separately.  
-- CORS + JSON-only API; no auth/multi-tenant logic included.
+    4.a. Key Design Decisions  
+        - AI parsing for RFPs/proposals (Gemini primary, Groq fallback).  
+        - Prisma + Postgres for typed relational data.  
+        - Weighted comparison endpoint for price/delivery/warranty.  
+        - CloudMailin webhook ingests vendor replies directly into proposals.  
+        - JSON-only API, no auth/multi-tenant in this phase.
 
-4.b. Assumptions  
-- Vendor email subjects contain an RFP hint (`RFPID:<id>` or keyword) so webhook can route correctly.  
-- Vendor emails include enough detail for AI to extract price/delivery/warranty; users can adjust manually if parsing is imperfect.  
-- Single-tenant, single-user environment; auth/roles are out of scope.  
-- CloudMailin (or equivalent) reliably delivers payload fields as expected.
+    4.b. Assumptions  
+        - Subjects include an RFP hint (`RFPID:<id>` or keyword) so routing works.  
+        - Vendor emails contain enough detail for AI to extract price/delivery/warranty; manual edits are allowed.  
+        - Single-tenant usage.  
+        - CloudMailin delivers payload fields as expected.
+
+Scoring & Selection (0–10)  
+- Weights: price 45%, delivery 35%, warranty 20%.  
+- Normalize each criterion 0–1 across proposals; missing values default to 0.5.  
+- Total score = `priceScore*0.45 + deliveryScore*0.35 + warrantyScore*0.20`.  
+- `scoreOutOf10 = totalScore * 10`; highest wins (`bestProposalId`).
 
 5. AI Tools Usage  
-5.a. Tools Used  
-- ChatGPT (documentation and code refactors).  
-- Gemini (production AI parsing for RFPs/proposals).  
-- Groq (fallback parsing if Gemini fails).
+    5.a. Tools Used  
+        - ChatGPT/Codex (this assistant)  
+        - GitHub Copilot  
+        - Gemini  
+        - Groq  
 
-5.b. What They Helped With  
-- ChatGPT: documenting setup/endpoints, wiring env handling, minor frontend config.  
-- Gemini/Groq: converting natural language RFPs and emails into structured proposals/specs at runtime.
+    5.b. What They Helped With  
+        - ChatGPT/Codex & Copilot: scaffolding, env wiring, endpoint and README writing, frontend tweaks.  
+        - Gemini/Groq: runtime parsing of RFP text and vendor emails into structured proposals/specs.  
 
-5.c. Notable Prompts / Approaches  
-- “Convert this procurement request into structured JSON with fields: budget, currency, deliveryDeadlineDaysFromNow, items[].”  
-- “Extract pricing, delivery days, warranty, and terms from this vendor email.”  
-- “Compare proposals for an RFP with weighted scoring for price, delivery, warranty.”
+    5.c. Notable Prompts / Approaches  
+        - Convert procurement request into structured JSON (budget, currency, delivery days, items[]).  
+        - Extract pricing/delivery/warranty/terms from vendor emails.  
+        - Compare proposals with weighted scoring (price/delivery/warranty).  
 
-5.d. Lessons Learned / Changes from AI Assistance  
-- Structured prompts with strict JSON contracts reduce parsing errors.  
-- Having a fallback model (Groq) improves resilience when the primary model is unavailable.  
-- Human review of AI-parsed proposals is still necessary for edge cases and incomplete emails.
+    5.d. Lessons Learned / Changes from AI Assistance  
+        - Structured prompts with strict JSON contracts reduce parsing errors.  
+        - Having a fallback model (Groq) improves resilience when the primary model is unavailable.  
+        - Human review of AI-parsed proposals is still necessary for edge cases and incomplete emails.

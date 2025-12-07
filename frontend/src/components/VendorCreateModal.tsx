@@ -44,7 +44,6 @@ export function VendorCreateModal({
 
       onCreated?.(vendor);
 
-      // Reset
       setName("");
       setEmail("");
       setContactPerson("");
