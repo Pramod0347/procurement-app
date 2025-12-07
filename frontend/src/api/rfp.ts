@@ -1,9 +1,10 @@
 import type { Rfp } from "../types";
 import { API_BASE_URL } from "../config";
+import { fetchWithSlowOverlay } from "../lib/slowOverlay";
 
 export async function getAllRfps(): Promise<Rfp[]> {
     try {
-        const res = await fetch(`${API_BASE_URL}/rfps`);
+        const res = await fetchWithSlowOverlay(`${API_BASE_URL}/rfps`);
 
         if (!res.ok) {
             throw new Error("Failed to fetch RFPs");
@@ -23,7 +24,7 @@ export async function createRfp(input: {
     naturalLanguageInput: string;
 }): Promise<Rfp> {
     try {
-        const res = await fetch(`${API_BASE_URL}/rfps/from-text`, {
+        const res = await fetchWithSlowOverlay(`${API_BASE_URL}/rfps/from-text`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

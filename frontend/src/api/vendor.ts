@@ -1,9 +1,10 @@
 import type { Vendor } from "../types";
 import { API_BASE_URL } from "../config";
+import { fetchWithSlowOverlay } from "../lib/slowOverlay";
 
 export async function getAllVendors(): Promise<Vendor[]> {
   try {
-    const res = await fetch(`${API_BASE_URL}/vendors`);
+    const res = await fetchWithSlowOverlay(`${API_BASE_URL}/vendors`);
     if (!res.ok) throw new Error("Failed to load vendors");
     return await res.json();
   } catch (error) {
@@ -19,7 +20,7 @@ export async function createVendor(data: {
   notes?: string;
 }): Promise<Vendor> {
   try {
-    const res = await fetch(`${API_BASE_URL}/vendors`, {
+    const res = await fetchWithSlowOverlay(`${API_BASE_URL}/vendors`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),

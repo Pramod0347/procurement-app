@@ -4,6 +4,7 @@ import { RfpsPage } from "./pages/RfpsPage";
 import { VendorsPage } from "./pages/VendorsPage";
 import { EmailsPage } from "./pages/EmailsPage";
 import { ProposalsPage } from "./pages/ProposalsPage";
+import { SlowOverlay } from "./components/SlowOverlay";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -23,6 +24,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+      <SlowOverlay />
       <header className="sticky top-0 z-10 border-b border-slate-200/70 bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
           <Link to="/" className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-3 py-1 text-sm font-semibold text-white shadow-sm">
