@@ -97,7 +97,7 @@ Scoring & Selection (0–10)
 
 5. AI Tools Usage  
     5.a. Tools Used  
-        - ChatGPT/Codex (this assistant)  
+        - ChatGPT/Codex
         - GitHub Copilot  
         - Gemini  
         - Groq  
